@@ -1,0 +1,49 @@
+Seed: 0
+Number of DAGs: 50
+
+Graph structure:
+  Generation method: "Fan-in/Fan-out"
+  Number of nodes:
+    Fixed: 20
+  In-degree:
+    Random: [1, 2, 3]
+  Out-degree:
+    Random: [1, 2, 3]
+  Number of source nodes:
+    Combination: [1, 2, 3, 4]
+  Number of sink nodes:
+    Fixed: 1
+  Ensure weakly connected: True
+
+Properties:
+  Execution time:
+    Random: (1, 50, 1)
+  Communication time:
+    Random: [1, 2, 3, 4, 5]
+  End-to-end deadline:
+    Ratio of deadline to critical path:
+      Random: (1.0, 1.5, 0.1)
+  CCR:
+    Random: (0.5, 3.0, 0.1)
+
+  Additional properties:
+    Node properties:
+      Weight:
+        Random: [1, 2, 3, 4, 5]
+    Edge properties:
+      Transfer:
+        Combination: [1, 2, 3, 4, 5] 
+
+Output formats:
+  Naming of combination directory: "Abbreviation"
+  DAG:
+    YAML: True
+    JSON: False
+    XML: False
+    DOT: False
+  Figure:
+    Draw legend: False
+    PNG: False
+    SVG: False
+    EPS: False
+    PDF: False

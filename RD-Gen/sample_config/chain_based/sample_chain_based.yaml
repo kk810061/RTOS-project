@@ -1,0 +1,47 @@
+Seed: 0
+Number of DAGs: 50
+
+Graph structure:
+  Generation method: "Chain-based"
+  Number of chains:
+    Combination: [2, 3, 4]
+  Main sequence length:
+    Random: (2, 7, 1)
+  Number of sub sequences:
+    Random: [1, 2, 3]
+  Vertically link chains:
+    Number of source nodes:
+      Fixed: 2
+    Main sequence tail: True
+    Sub sequence tail: True
+  Merge chains:
+    Number of sink nodes:
+      Fixed: 1
+    Middle of chain: False
+    Sink node: True
+
+Properties:
+  Multi-rate:
+    Periodic type: 'Chain'
+    Period:
+      Random: [10000, 20000, 30000, 40000, 50000, 60000]
+    Source node period:
+      Random: [50, 100]
+    Total utilization:
+      Combination: (5.0, 6.5, 0.1)
+    Maximum utilization:
+      Fixed: 2.7
+
+Output formats:
+  Naming of combination directory: "Abbreviation"
+  DAG:
+    YAML: True
+    JSON: False
+    XML: False
+    DOT: False
+  Figure:
+    Draw legend: False
+    PNG: False
+    SVG: False
+    EPS: False
+    PDF: False

@@ -1,0 +1,53 @@
+directed: true
+graph: {}
+links:
+- source: 0
+  target: 1
+- source: 0
+  target: 2
+- source: 0
+  target: 3
+- source: 0
+  target: 4
+- source: 1
+  target: 4
+- source: 2
+  target: 4
+- source: 3
+  target: 4
+- source: 5
+  target: 6
+- source: 5
+  target: 7
+- source: 6
+  target: 4
+- source: 7
+  target: 4
+multigraph: false
+nodes:
+- chain_id: 0
+  execution_time: 45
+  id: 0
+  period: 50
+- chain_id: 0
+  execution_time: 2
+  id: 1
+- chain_id: 0
+  execution_time: 2
+  id: 2
+- chain_id: 0
+  execution_time: 73
+  id: 3
+- chain_id: 0
+  execution_time: 4
+  id: 4
+- chain_id: 1
+  execution_time: 90
+  id: 5
+  period: 50
+- chain_id: 1
+  execution_time: 4
+  id: 6
+- chain_id: 1
+  execution_time: 34
+  id: 7

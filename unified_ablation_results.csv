@@ -1,0 +1,5 @@
+Mechanism,Priority,DVFS,Salvaged,Impending Misses,DSR %,DSR_lo,DSR_hi
+None (Passive Alarming),Nominal (D),Nominal (1.0x),0,100,0.0,3.469446951953614e-16,3.699349820698568
+Priority Escalation Only,Emergency (-1),Nominal (1.0x),32,100,32.0,23.66914732499909,41.662618610452384
+Amdahl DVFS Boost Only,Nominal (D),Boost (1.33x),12,100,12.0,6.999406437019489,19.81209942671142
+Combined (Dual Mitigate),Emergency (-1),Boost (1.33x),61,100,61.0,51.203017045840724,69.98312599360558

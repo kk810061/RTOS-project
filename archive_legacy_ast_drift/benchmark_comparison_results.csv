@@ -1,0 +1,6 @@
+Method,FPR (%),FNR (%),Precision (%),Recall (%),F1-Score (%),Lead Time (ms)
+1. Deterministic WCET,100.0,0.0,28.0,100.0,43.75,3.71
+2. Fixed Threshold (0.40),0.46,10.71,98.68,89.29,93.75,0.69
+3. Base Paper (Toba 2026),0.46,10.71,98.68,89.29,93.75,0.61
+4. Ours: Spatiotemporal,12.04,5.95,75.24,94.05,83.6,2.62
+5. Ours: ML Classifier (HGB),18.06,1.19,68.03,98.81,80.58,2.89

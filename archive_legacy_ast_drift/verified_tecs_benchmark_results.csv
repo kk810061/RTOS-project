@@ -1,0 +1,9 @@
+Scenario,Method,Precision,Recall,F1_Score,Earlier_Time_ms
+Stationary_Control,1.0 [Yano 2023],0.036,1.0,0.068,130.07
+Stationary_Control,0.95 [ECRTS 2024],0.388,0.98,0.541,56.62
+Stationary_Control,TECS 0.8-1.0 (time),0.439,0.974,0.594,47.35
+Stationary_Control,TECS + AST' Drift [Ours],0.439,0.974,0.594,47.35
+Non_Stationary_Drift,1.0 [Yano 2023],0.077,1.0,0.141,131.51
+Non_Stationary_Drift,0.95 [ECRTS 2024],0.522,0.932,0.665,56.35
+Non_Stationary_Drift,TECS 0.8-1.0 (time),0.559,0.934,0.695,45.06
+Non_Stationary_Drift,TECS + AST' Drift [Ours],0.388,0.964,0.549,71.69

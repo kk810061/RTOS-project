@@ -1,0 +1,6 @@
+networkx==3.4.2
+numpy==2.2.6
+pydot==3.0.0
+PyYAML==6.0.3
+schema==0.7.5
+tqdm==4.66.1

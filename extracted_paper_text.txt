@@ -1,0 +1,481 @@
+===================== PAGE 13 =====================
+H. Toba and T. Azumi 8:13
+WCET. The average is set asµ= WCET/ 3.0, and the standard deviation isσ= µ/2.0.
+The execution time follows a normal distributionN (µ,σ) with a probability of0.98, and a
+normal distributionN (WCET, 0.2σ) with a probability of0.02. This setting is empirically
+derived from the characteristics ofAutoware runtimes measured by CARET [9].
+The scheduling algorithm adopted is Earliest Deadline First (EDF) [16]. That is, jobs
+with shorter time to the deadline are given higher priority for execution. Here, implicit
+deadlines are assumed, and the relative deadline for each job is equal to the period of the
+corresponding node. The relative deadline ofevent-driven nodes that do not have their own
+period is assumed to be equal to the period of the subgraph they belong to. Additionally,
+each job is executed non-preemptively, and once assigned to a processor, the job will not be
+interrupted until completion.
+The simulations are written in Python and executed on a system with 2.9 GHz 8-Core
+Intel Core i7 CPU, 32 GiB RAM, and Ubuntu 22.04 LTS (64-bit) OS.
+5.2 Performance Metrics
+This section describes the metrics for evaluation. First, the classification of simulation results
+needed to calculate performance metrics is listed:
+True Positive (TP): TP is the case where a deadline miss is detected early by the proposed
+method, and an actual deadline miss occurs when the processing has progressed. This
+result indicates that the early detection of deadline miss by the proposed method is
+accurate.
+False Positive (FP): FP is the case where a deadline miss is detected early by the proposed
+method, but no deadline miss actually occurs when processing has progressed. This result
+indicates that the deadline miss detection by the proposed method is pessimistic. In the
+context of autonomous driving systems, a higher occurrence of FP results implies that
+the system often transitions to the MRM mode even when no actual deadline miss occurs,
+which hinders smooth operation.
+True Negative (TN): TN is the case where a deadline miss is not detected early, and
+no deadline miss actually occurs when processing has progressed. This result means
+that the system can correctly predict that no deadline miss will occur. In safety-critical
+real-time systems, the occurrence of deadline misses is expected to be rare. Therefore, if
+the accuracy of early detection of deadline miss is high, most results will be TN when
+the system is in a safe state.
+False Negative (FN): FN is the case where a deadline miss is not detected early, but an
+actual deadline miss occurs when processing has progressed. This result indicates that
+the proposed method failed to detect the deadline miss early.
+Using the counts of these results, the following performance metrics to evaluate the
+proposed method are calculated:
+Accuracy: The Accuracyrepresents the proportion of accurate predictions among the
+total number of results of deadline miss prediction and is defined as follows:
+Accuracy = TP +TN
+TP +FP +TN +FN (13)
+As evident from the formula, the smaller FP and FN are, the closerAccuracyapproaches 1.
+When FP and FN are both0, i.e., a deadline miss always occurs when a deadline miss is
+predicted, and all actual deadline misses are detected early,Accuracyis exactly 1.
+ECRTS 2024
+===================== PAGE 14 =====================
+8:14 Deadline Miss Early Detection Method Considering Variable Execution Time
+Table 4Experimental parameters in Section 5.3.
+Parameter V alue
+Number of cores 8
+Normalized utilization [%] 275, 280, 285, 290, 295, 300, 305 1
+αin Equation (3) 2.0, 2.1, 2.2, 2.3, 2.4, 2.5
+Number of entry nodes 7, 8, 9
+Number of exit nodes 1
+Period oftimer-driven nodes[ms] 10, 20, 30, 50, 60, 100
+Probability threshold 1, 0.99, 0.95, 0.90
+Recall: The Recall represents the proportion of predicted deadline misses among all
+actual deadline misses and is defined as follows:
+Recall = TP
+TP +FN (14)
+The higher value of theRecall, the more reliably deadline misses are detected. From the
+standpoint of safety, the value close to 1 is desirable.
+Precision: The Precision is the ratio of accurately predicted deadline misses to the total
+number of deadline miss predictions and is defined as follows:
+Precision = TP
+TP +FP (15)
+A higher Precision value indicates that a higher proportion of early-detected deadline
+misses actually result in deadline misses, which is crucial for avoiding unnecessary
+disruptions.
+F-measure: The F-measure is the harmonic mean of theRecall and the Precision, and is
+derived as follows:
+F-measure = 2·Recall·Precision
+Recall + Precision (16)
+As mentioned above, the higherRecall and Precision, the better the result. However,
+they are in a trade-off relationship. Therefore, the balance between theRecall and the
+Precision is evaluated using theF-measure index.
+5.3 Comparison of Detection Results with Different Thresholds
+In this section, the performance of deadline miss early detection using different probability
+thresholds is examined. Here, how the probability threshold works is explained. The early
+detection of deadline miss is conducted at the beginning of job execution by referring to
+the plaxity-cdf. In practice, the largestplaxity-cdf value with a probability greater than or
+equal to the given threshold (i.e., quantile for the threshold) is compared with the execution
+start time. If the latter is greater, a deadline miss is detected. That is, if the probability
+of meeting the deadline at execution start time is greater than the specified threshold, a
+1 To compare the performance of deadline miss predictions, it is necessary to consider the situation in
+which a deadline miss occurs, i.e., when the system is overloaded. In this experimental setting, the
+normalized utilization is defined using WCET, although the job execution time is extremely smaller
+than WCET. Therefore, tasks with normalized utilization that are well above100% are considered, for
+the occurrence of deadline misses.
+===================== PAGE 15 =====================
+H. Toba and T. Azumi 8:15
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+275 280 285 290 295 300 305
+Normalized utilization [%]
+TN Ratio
+FP Ratio
+FN Ratio
+TP Ratio
+(a) Threshold: 1.00.
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+275 280 285 290 295 300 305
+Normalized utilization [%]
+TN Ratio
+FP Ratio
+FN Ratio
+TP Ratio (b) Threshold: 0.99.
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+275 280 285 290 295 300 305
+Normalized utilization [%]
+TN Ratio
+FP Ratio
+FN Ratio
+TP Ratio
+(c) Threshold: 0.95.
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+275 280 285 290 295 300 305
+Normalized utilization [%]
+TN Ratio
+FP Ratio
+FN Ratio
+TP Ratio (d) Threshold: 0.90.
+Figure 7TP, FP, TN, and FN ratios with increasing utilization.
+deadline miss is not detected. Therefore, setting a high probability threshold results in a
+more strict deadline miss prediction, while a low threshold leads to a more lenient prediction.
+When the threshold is set to1, the results are the same as for the conventional method,
+which calculates laxity using WCET.
+For each probability threshold, simulations are performed with increasing task utilization,
+and the results obtained are evaluated using defined performance metrics. The parameters
+used in this section are listed in Table 4. The normalized utilization is the total utilization
+of the task divided by the number of processor cores. The task utilization is based on the
+assumption of WCET. Note that the normalized utilization ratio above100% does not mean
+that the system is immediately overloaded, since the actual execution time is extremely
+small compared to WCET in this paper. In this experiment, it is necessary to increase the
+utilization to a level where deadline misses occur for comparison, which is greater than100%.
+Changes in TP, FP, TN, and FN with increasing utilization are shown in Figure 7. For
+each utilization (i.e., each point on the x-axis of figures), 500 randomly-generated DAGs
+were run 10 times each. Note that the execution time of nodes differs from run to run for
+the same DAG. As the utilization rate increases, more deadline misses occur. Then, the
+fact that decreasing the threshold results in fewer occurrences of FP is clear. This implies a
+reduction in the number of instances where a deadline miss is predicted despite not actually
+missing a deadline, thereby mitigating pessimism. However, it is important to note that
+as the probability threshold decreases and FP decreases, FN increases. This can be easily
+understood from the fact that there is a trade-off between reducing the number of useless
+ECRTS 2024
+===================== PAGE 16 =====================
+8:16 Deadline Miss Early Detection Method Considering Variable Execution Time
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+275 280 285 290 295 300 305
+Accuracy
+Normalized utilization [%]
+threshold: 1.00
+threshold: 0.99
+threshold: 0.95
+threshold: 0.90
+(a) Accuracy.
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+275 280 285 290 295 300 305
+Recall
+Normalized utilization [%]
+threshold: 1.00
+threshold: 0.99
+threshold: 0.95
+threshold: 0.90 (b) Recall.
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+275 280 285 290 295 300 305
+Precision
+Normalized utilization [%]
+threshold: 1.00
+threshold: 0.99
+threshold: 0.95
+threshold: 0.90
+(c) Precision.
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1
+275 280 285 290 295 300 305
+F-measure
+Normalized utilization [%]
+threshold: 1.00
+threshold: 0.99
+threshold: 0.95
+threshold: 0.90 (d) F-measure.
+Figure 8Accuracy, Recall, Precision and F-measure results with increasing utilization.
+deadline miss predictions and detecting deadline errors without missing them. Then, the
+Accuracy, Precision, Recall, and F-measure are calculated from these values of TP, FP, TN,
+and FN.
+The proposed method is clearly superior with respect to theAccuracy as shown in
+Figure 8(a). However, setting the probability threshold to 1 corresponds to the conventional
+method using WCET. HigherAccuracyis obtained by setting the threshold smaller than 1.
+For the thresholds shown in the figure, the decrease of FP is greater than the increase of FN
+with decreasing threshold, so that smaller thresholds result in higherAccuracy.
+The Recall with each threshold as utilization increases is shown in Figure 8(b). TheRecall
+is an indicator of the ability to detect deadline misses without omission, and is highly relevant
+to the safety. At least when the threshold is set to 0.99, theRecall is maintained at almost 1.
+When the threshold is set to 0.9, theRecall is reduced by up to five percent. Although
+lowering the threshold can reduce pessimism, the threshold must be set in consideration of
+the decrease in theRecall.
+The comparison of thePrecisionresults is shown in Figure 8(c). This result is the primary
+contribution of this paper. In the conventional method, the actual execution time of a task
+is almost never WCET, resulting in a lowPrecision in many cases where a deadline miss is
+detected but no deadline miss actually occurs. The purpose of this paper is to overcome this
+pessimism, and from the figure, this purpose has been fulfilled.
+The F-measure results are shown in Figure 8(d). TheF-measure is the harmonic mean
+of the Recall and the Precision and evaluates the balance between them. The results of
+F-measure show almost the same trend as those ofPrecision. This is because theRecall is
+always close to 1, meaning that the proposed method succeeds in reducing pessimism while
+minimizing the loss of the safety.
+===================== PAGE 17 =====================
+H. Toba and T. Azumi 8:17
+Table 5Earlier timeresults.
+Probability threshold A verage earlier time [ms]
+1.00 301.8
+0.99 229.0
+0.95 198.0
+0.90 183.4
+Table 6Experimental parameters in Section 5.5.
+Parameter V alue
+αin Equation (3) 2.0
+Period oftimer-driven nodes[ms] 10, 20, 30, 50, 60, 100
+5.4 Earlier TimeResult with Proposed Method
+The earlier time of the proposed method is evaluated in this section. Here, theearlier time
+indicates how early a deadline miss is predicted. The systems, incorporating our proposed
+method, can detect a deadline miss earlier and shift to a safe state byearlier time than if
+deadline miss early detection is not performed. The task set and parameters evaluated in
+this section are identical to those in Section 5.3 and Table 4, respectively.
+The earlier time results at each probability threshold are shown in Table 5. As mentioned
+above, the deadline miss prediction is more severe for higher threshold values and less severe
+for lower values. Generally, a higher threshold results in earlier deadline miss predictions,
+as shown in Table 5. However, the fact that a large value of theearlier time does not
+immediately mean that the method is superior should be noted. The reason is that the earlier
+the deadline miss prediction is made, regardless of the deadline miss probability at the time,
+the larger the result of theearlier time will be. However, in that case, most of the predicted
+deadline misses will not actually occur, resulting in an overly pessimistic system. Therefore,
+comparing the earlier time at different threshold values is not inherently meaningful. Rather,
+assessing the earlier time while considering theAccuracyof deadline miss detection at each
+threshold makes more sense. With a probability threshold of0.95, the Accuracyfor deadline
+miss detection is significantly improved over the conventional method, exceeding0.8 for all
+utilization (refer to Figure 8(a)). At this threshold, the averageearlier time is 198.0 ms.
+The practical impact of thisearlier time is evident in operational scenarios. For instance,
+when an autonomous vehicle is traveling at60 km/h, this vehicle advances approximately
+3.3 meters in 198.0 ms, and this distance has a significant impact on the success of crisis
+avoidance. Therefore, the proposed method can detect a deadline miss early enough while
+maintaining high prediction accuracy when an appropriate probability threshold is specified.
+5.5 Calculation Time of plaxity of Each Job
+The time cost of computingplaxity with respect to the following two factors are evaluated:
+(i) the number of nodes in a system, and (ii) the unit of execution time. Note that a smaller
+execution time unit means that the number of entries in the execution time distribution of
+each task increases. The common parameter settings to the experiments for the two factors
+are shown in Table 6.
+First, the variation of the calculation time with the number of nodes in a system is
+investigated. In this experiment, 500 DAGs with the number of nodes randomly set in the
+range [20, 200] were generated to measureplaxity calculation time. Note that the execution
+ECRTS 2024
+===================== PAGE 18 =====================
+8:18 Deadline Miss Early Detection Method Considering Variable Execution Time
+0
+10
+20
+30
+40
+50
+60
+70
+80
+90
+100
+110
+0 50 100 150 200
+Calculation time  [s]
+Number of nodes
+Figure 9Calculation time ofplaxity with
+increasing nodes.
+10
+−3
+10
+−4
+10
+−5
+/uni00000037 /uni0000004c/uni00000050/uni00000048/uni00000003/uni00000058/uni00000051/uni0000004c/uni00000057/uni00000003/uni0000003e/uni00000056/uni00000040
+/uni00000014/uni00000013
+/uni000000ed/uni00000016
+/uni00000014/uni00000013
+/uni000000ed/uni00000015
+/uni00000014/uni00000013
+/uni000000ed/uni00000014
+/uni00000014/uni00000013
+/uni00000013
+/uni00000014/uni00000013
+/uni00000014
+/uni00000014/uni00000013
+/uni00000015
+/uni00000014/uni00000013
+/uni00000016
+/uni00000026/uni00000044/uni0000004f/uni00000046/uni00000058/uni0000004f/uni00000044/uni00000057/uni0000004c/uni00000052/uni00000051/uni00000003/uni00000057/uni0000004c/uni00000050/uni00000048/uni00000003/uni0000003e/uni00000056/uni00000040
+Figure 10Calculation time ofplaxity
+for different time units.
+time unit for this experiment is10−4 seconds. The results of this experiment are shown in
+Figure 9. The overall trend is that the calculation time lengthens as the number of nodes
+increases. However, the calculation time for a large number of nodes varies widely. This
+is because the number of nodes itself does not determine the number ofplaxity calculated.
+The only jobs for whichplaxity is calculated are those for which exit jobs have a direct or
+indirect dependency. The number of such jobs depends on the structure of the DAG and the
+difference in periods between subgraphs exchanging data. Nevertheless, the more nodes a
+system contains, the larger the maximum number ofplaxity computed tends to be. As a
+result, the number of nodes and the calculation time ofplaxity are correlated at a certain
+extent. Then, focusing on the case with 100 nodes, due to the fact that the number of
+nodes in Autoware is around 100, the calculation is completed in less than 40 seconds at
+the maximum. Considering that the calculation ofplaxity is done statically during system
+development, this calculation time is a sufficiently practical level. Even when the number of
+nodes is doubled to 200, the calculation is completed in approximately 100 seconds, which is
+still a practical calculation cost.
+Next, the relationship between the unit of execution time and the calculation time is
+examined. In this experiment, 100 DAGs each with execution time unit of10−3 s, 10−4 s,
+and 10−5 s, the time cost of computing theirplaxity is measured. Here, for example, the
+execution time distribution of a task with WCET of 5 ms has 5, 50, and 500 entries in
+each case. If the unit is10−3 s, then all probabilities of execution times greater than 4 ms
+and less than 5 ms are integrated into the probability of 5 ms, which leads to pessimism.
+Therefore, while having as fine as possible is desirable, the increase in time cost resulting
+from this is not negligible and needs to be investigated. Note that the number of nodes
+in DAG is fixed at 100 for the aforementioned reason. The results of each experiment are
+shown in Figure 10. The calculation time in the case of10−3 s is extremely short and not a
+problem at all. Besides, in the case of10−4 s, as mentioned earlier, the calculation time is
+sufficiently practical level. Then, in the case of10−5 s, the maximum calculation time is less
+than one hour. Although this is a longer time than the previous units, but still at a practical
+level, considering that theplaxity is calculated statically. As a whole, when the time unit is
+===================== PAGE 19 =====================
+H. Toba and T. Azumi 8:19
+reduced to 1/10, the calculation time tends to increase by a factor of about 100. This result
+is consistent with the insight obtained from the fact that the time complexity of applying
+linear convolution to distributions withm and n elements isO(mn), and that the number
+of entries in the execution time distribution increases tenfold when the time unit is1/10.
+Therefore, if the time unit is10−6 s, the time required to calculateplaxity for a system with
+100 nodes is expected to less than 100 hours, or about four days. From the standpoint of
+practicality, this will be the limit for mincing the execution time.
+6 Related Work
+Methods for determining job-level dependencies in HP have been proposed for timing analysis
+of DAGs consisting of tasks that are driven by different periods. One heuristic solution was
+proposed by Becker et al. [2]. In their method, the earliest and latest cases of data read
+and write times for each periodic task are considered, and all possible job-level dependencies
+are obtained. Then, as an equivalent problem to determining the job-level dependencies
+in HP, a method for converting a multi-period DAG into multiple single-period DAGs was
+proposed by Verucchi et al. [17]. These methods adequately determine job-level dependencies
+in multi-period DAGs. However, they consider DAGs consisting only of periodic tasks and
+are not directly applicable to DAGs with a mixture oftimer-driven and event-driven nodes.
+Models with a mixture oftimer-driven and event-driven nodes have been studied in
+the field of the robot operating systems (ROS). The response time analysis of the ROS 2
+processing chain, first proposed by Casini et al. [4] is an example of such a study. They
+also proposed a real-time scheduling method for ROS 2. However, their research has not
+determined the job-level dependencies.
+As a result that straddles the above two contexts, a method for deadline miss early
+detection for mixed timer-driven and event-driven DAG tasks was proposed by Yano et
+al. [19]. Their method first determines the job-level dependencies in a mixedtimer-driven
+and event-driven DAG task, and then places reasonable time constraints on each job based
+on defined end-to-end deadlines anddata freshness constraints. At runtime, the system
+checks to see if the job start time meets the established time constraint to achieve deadline
+miss early detection. However, this method has the disadvantage of being pessimistic because
+each job is assumed to take WCET in calculating time constraints.
+Pessimism caused by the assumption of WCET is a constant problem in the timing
+analysis of real-time systems. To overcome this problem, studies have been conducted to
+capture the runtime behavior of the system in probabilistic terms and to analyze the actual
+timing behavior in a more rigorous manner. One example is the method using convolution
+of probability mass functions, which was first proposed by Bernat et al. [3]. Their method
+expresses the execution time of program components as a probability mass function and
+defines a convolutional operation to add them. Then, by repeatedly applying this operation,
+the execution time of the entire program is finally expressed as a probability mass function.
+This framework was applied to the context of autonomous driving systems by Lee et al. [10].
+They proposed a probabilistic analysis of the end-to-end latency of a multi-period DAG
+modeling an autonomous driving system. Similarly, a method to reduce end-to-end latency
+was proposed by Han et al. [6]. In their proposal, they introduced a technique to mitigate
+pessimistic predictions by using probabilistic execution time.
+ECRTS 2024
+===================== PAGE 20 =====================
+8:20 Deadline Miss Early Detection Method Considering Variable Execution Time
+Table 7Comparison of the proposed method with related work.
+DAG MPD a) MTEb) DEDc) PRBd)
+RTCSA 2016 [2] ✓ ✓
+RTAS 2019 [17] ✓ ✓
+ECRTS 2019 [4] ✓ ✓ ✓
+IEEE Access 2023 [19] ✓ ✓ ✓ ✓
+RTSS 2002 [3] ✓
+IEEE Transactions on Computers 2022 [10] ✓ ✓ ✓
+RTAS 2023 [6] ✓ ✓ ✓ ✓
+Proposed method ✓ ✓ ✓ ✓ ✓
+a) MPD: Multi-period DAG
+b) MTE: Mixture oftimer-driven and event-driven nodes
+c) DED: Deadline miss early detection
+d) PRB: Probabilistic method
+7 Conclusion
+In this paper, we have proposed a method for deadline miss early detection for real-time
+systems that takes into account variations in task execution time. The proposed method
+takes the execution time of each task in the system as a random variable and convolves them
+to place an appropriate time constraint calledplaxity on each job in the DAG. This constraint
+allows the system to detect deadline misses early at any level required by users. In this
+way, the proposed method provides deadline miss early detection at an arbitrary probability
+threshold to suppress the pessimism of the conventional method. The experimental evaluation
+showed that the proposed method successfully reduced pessimism and significantly improved
+accuracy compared to the conventional method, which does not account for variations in
+task execution time. By setting a sufficiently high probability threshold with the proposed
+method, false positives can be significantly reduced with little loss of completeness in deadline
+miss early detection. Experiments also indicated that the calculation of the proposed method
+can be completed in a sufficiently practical time, assuming that the proposed method is
+applied to an actual automated driving system.
+In future work, consideration of execution time variation in job-level dependency analysis
+will be of interest. The proposed method uses WCET for this analysis, but more accurate
+detection can be expected by probabilistically capturing job-level dependencies as well. In
+this case, since the computational complexity is expected to increase as the number of
+combinations increases, efforts to reduce the complexity are needed to be done. For example,
+circular convolution [12], appropriate re-sampling [5, 13], and parallelization [14] are seen as
+promising options.
+References
+1 Baidu Apollo project. URL:https://www.apollo.auto/.
+2 Matthias Becker, Dakshina Dasari, Saad Mubeen, Moris Behnam, and Thomas Nolte. Syn-
+thesizing job-level dependencies for automotive multi-rate effect chains. InProceedings of the
+22nd IEEE International Conference on Embedded and Real-Time Computing Systems and
+Applications (RTCSA), pages 159–169, 2016.
+3 Guillem Bernat, Antoine Colin, and Stefan M. Petters. WCET analysis of probabilistic hard
+real-time systems. InProceedings of the 23rd IEEE Real-Time Systems Symposium (RTSS),
+pages 279–288, 2002.
+4 Daniel Casini, Tobias Blaß, Ingo Lütkebohle, and Björn B. Brandenburg. Response-Time
+Analysis of ROS 2 Processing Chains Under Reservation-Based Scheduling. InProceedings of
+the 21st Euromicro Conference on Real-Time Systems (ECRTS), pages 1–23, 2019.

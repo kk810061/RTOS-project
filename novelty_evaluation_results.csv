@@ -1,0 +1,5 @@
+Regime,Impending Miss %,Recall %,Precision %,FPR %,Lead Time,Deadline Salvage Rate (DSR),Salvaged Count
+1. Toba Baseline (Nominal Independent),2.5%,100.0%,58.8%,1.8%,166.5 ms,0.0%,0/10
+2. Toba under Correlated Clutter,3.5%,100.0%,66.7%,1.8%,140.1 ms,0.0%,0/14
+3. Idea 3: Context-Coupled Plaxity,3.5%,100.0%,63.6%,2.1%,190.0 ms,0.0%,0/14
+4. Idea 3 + Idea 1: Predict & Mitigate,3.5%,100.0%,63.6%,2.1%,190.0 ms,71.4%,10/14

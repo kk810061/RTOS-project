@@ -17,9 +17,14 @@ import pandas as pd
 import networkx as nx
 import yaml
 from scipy import stats
+import sys
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, REPO_ROOT)
+sys.path.insert(0, os.path.dirname(__file__))
 
 from run_unified_reproducible_evaluation import (
     build_dag_context, make_background, calculate_amdahl_duration,
@@ -33,7 +38,10 @@ from research_phase_idea2_deep_dive import (
 # 1. BUILD UNIFIED 1,000-JOB COHORT (MASTER SEED 42)
 # ----------------------------------------------------------------------------
 def build_master_cohort(n_dags=20, n_jobs=50, seed=42):
-    dag_files = sorted(glob.glob("RD-Gen/DAGs/**/dag_*.yaml", recursive=True))
+    dag_path = os.path.join(REPO_ROOT, "RD-Gen/DAGs/**/dag_*.yaml")
+    dag_files = sorted(glob.glob(dag_path, recursive=True))
+    if not dag_files:
+        dag_files = sorted(glob.glob("RD-Gen/DAGs/**/dag_*.yaml", recursive=True))
     stride = max(1, len(dag_files) // n_dags)
     selected_dags = dag_files[::stride][:n_dags]
 
@@ -162,8 +170,9 @@ def run_7way_ablation_and_confusion_matrices(cohort):
 
     df_ab = pd.DataFrame(ablation_records)
     print("\n" + df_ab.to_string(index=False))
-    df_ab.to_csv("unified_7way_ablation_and_confusion_matrices.csv", index=False)
-    print("\n[+] Saved unified_7way_ablation_and_confusion_matrices.csv")
+    out_csv = os.path.join(REPO_ROOT, "results", "unified_7way_ablation_and_confusion_matrices.csv")
+    df_ab.to_csv(out_csv, index=False)
+    print(f"\n[+] Saved {out_csv}")
 
     return df_ab, sim_outputs
 
@@ -223,8 +232,9 @@ def generate_all_100_impending_misses_telemetry(cohort, sim_outputs):
         })
 
     df_jobs = pd.DataFrame(records)
-    df_jobs.to_csv("all_100_impending_misses_telemetry.csv", index=False)
-    print(f"[+] Successfully wrote complete records for all {len(df_jobs)} impending misses to all_100_impending_misses_telemetry.csv")
+    out_jobs = os.path.join(REPO_ROOT, "results", "all_100_impending_misses_telemetry.csv")
+    df_jobs.to_csv(out_jobs, index=False)
+    print(f"[+] Successfully wrote complete records for all {len(df_jobs)} impending misses to {out_jobs}")
 
     # Summarize categories
     print("\nBreakdown of the 100 Impending Misses:")
@@ -240,7 +250,8 @@ def run_detailed_dispatch_delay_analysis(n_dags=10, n_jobs=25, seed=789):
     print("TASK 4: DETAILED DISPATCH DELAY ESTIMATOR ERROR DISTRIBUTION (BEYOND PEARSON)")
     print("=" * 90)
 
-    dag_files = sorted(glob.glob("RD-Gen/DAGs/**/dag_*.yaml", recursive=True))[:n_dags]
+    dag_path = os.path.join(REPO_ROOT, "RD-Gen/DAGs/**/dag_*.yaml")
+    dag_files = sorted(glob.glob(dag_path, recursive=True))[:n_dags]
     rng = np.random.default_rng(seed)
 
     all_data = []
@@ -290,7 +301,7 @@ def run_detailed_dispatch_delay_analysis(n_dags=10, n_jobs=25, seed=789):
     for reg, grp in df_err.groupby("regime"):
         print(f"  {reg:<16} | Samples: {len(grp):5d} | MAE: {grp['abs_error'].mean():5.2f} ms | Median: {grp['abs_error'].median():5.2f} ms | P95: {grp['abs_error'].quantile(0.95):5.2f} ms")
 
-    df_err.to_csv("dispatch_delay_error_distribution.csv", index=False)
+    df_err.to_csv(os.path.join(REPO_ROOT, "results", "dispatch_delay_error_distribution.csv"), index=False)
     return df_err
 
 # ----------------------------------------------------------------------------
@@ -301,7 +312,10 @@ def run_robust_contention_sweep(n_dags=20, n_jobs=50, seed=101):
     print("TASK 5: ROBUST CONTENTION LOAD SWEEP (1,000 RUNS PER LEVEL WITH 95% WILSON CIs)")
     print("=" * 90)
 
-    dag_files = sorted(glob.glob("RD-Gen/DAGs/**/dag_*.yaml", recursive=True))
+    dag_path = os.path.join(REPO_ROOT, "RD-Gen/DAGs/**/dag_*.yaml")
+    dag_files = sorted(glob.glob(dag_path, recursive=True))
+    if not dag_files:
+        dag_files = sorted(glob.glob("RD-Gen/DAGs/**/dag_*.yaml", recursive=True))
     stride = max(1, len(dag_files) // n_dags)
     selected_dags = dag_files[::stride][:n_dags]
 
@@ -399,8 +413,9 @@ def run_robust_contention_sweep(n_dags=20, n_jobs=50, seed=101):
         })
 
     df_sweep = pd.DataFrame(sweep_records)
-    df_sweep.to_csv("robust_contention_sweep_1000runs.csv", index=False)
-    print("\n[+] Saved robust_contention_sweep_1000runs.csv")
+    out_sweep = os.path.join(REPO_ROOT, "results", "robust_contention_sweep_1000runs.csv")
+    df_sweep.to_csv(out_sweep, index=False)
+    print(f"\n[+] Saved {out_sweep}")
 
     # Plot Contention Sweep Figure with Error Bands
     fig, ax = plt.subplots(figsize=(7.5, 4.8), dpi=300)
@@ -420,9 +435,10 @@ def run_robust_contention_sweep(n_dags=20, n_jobs=50, seed=101):
     ax.set_title("DSR vs Contention Load (1,000 Jobs per Level with 95% Wilson CIs)", fontweight="bold", pad=12)
     ax.set_ylim(-2, 105)
     ax.legend(frameon=True, loc="lower right")
-    plt.savefig("figure_robust_contention_sweep.png", dpi=300)
+    out_fig = os.path.join(REPO_ROOT, "figures", "figure_robust_contention_sweep.png")
+    plt.savefig(out_fig, dpi=300)
     plt.close()
-    print("[+] Saved figure_robust_contention_sweep.png")
+    print(f"[+] Saved {out_fig}")
 
     return df_sweep
 

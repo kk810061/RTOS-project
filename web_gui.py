@@ -1668,8 +1668,12 @@ class DashboardHandler(BaseHTTPRequestHandler):
             })
 
         elif path == "/api/author_benchmark":
-            # Load author scale benchmark results from CSV
-            csv_path = "author_scale_5000_benchmark_results.csv"
+            # Load author scale benchmark results from CSV (prefer results/ directory)
+            csv_path = os.path.join("results", "author_scale_5000_benchmark_results.csv")
+            if not os.path.exists(csv_path):
+                csv_path = "author_scale_5000_benchmark_results.csv"
+            if not os.path.exists(csv_path):
+                csv_path = os.path.join("results", "unified_7way_ablation_and_confusion_matrices.csv")
             if not os.path.exists(csv_path):
                 csv_path = "unified_7way_ablation_and_confusion_matrices.csv"
             
@@ -1717,7 +1721,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
         elif self.path == "/api/run_author_benchmark":
             try:
-                from run_author_scale_benchmark import run_benchmark
+                try:
+                    from benchmarks.run_author_scale_benchmark import run_benchmark
+                except ImportError:
+                    from run_author_scale_benchmark import run_benchmark
                 length = int(self.headers.get("Content-Length", 0))
                 body = self.rfile.read(length).decode("utf-8") if length > 0 else "{}"
                 data = json.loads(body)

@@ -394,7 +394,11 @@ def mean_ci(arr, confidence=0.95):
 # 5. MASTER AUTHOR-SCALE BENCHMARK (500 DAGs x 10 Runs = 5,000 Instances)
 # ----------------------------------------------------------------------------
 def run_benchmark(n_dags=500, n_runs_per_dag=10, seed=42):
-    dag_files = sorted(glob.glob("RD-Gen/DAGs/**/dag_*.yaml", recursive=True))
+    REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    dag_path_pattern = os.path.join(REPO_ROOT, "RD-Gen/DAGs/**/dag_*.yaml")
+    dag_files = sorted(glob.glob(dag_path_pattern, recursive=True))
+    if not dag_files:
+        dag_files = sorted(glob.glob("RD-Gen/DAGs/**/dag_*.yaml", recursive=True))
     if len(dag_files) < n_dags:
         print(f"Warning: requested {n_dags} DAGs but found {len(dag_files)}. Using all available.")
         selected_dags = dag_files
@@ -529,7 +533,9 @@ def run_benchmark(n_dags=500, n_runs_per_dag=10, seed=42):
 
     # Save to CSV
     df = pd.DataFrame(results)
-    out_csv = "author_scale_5000_benchmark_results.csv"
+    out_dir = os.path.join(REPO_ROOT, "results")
+    os.makedirs(out_dir, exist_ok=True)
+    out_csv = os.path.join(out_dir, "author_scale_5000_benchmark_results.csv")
     df.to_csv(out_csv, index=False)
     print(f"\n[3/3] Results saved successfully to {out_csv}")
 
@@ -562,7 +568,9 @@ def run_benchmark(n_dags=500, n_runs_per_dag=10, seed=42):
         axes[1].text(w + 3.0, bar.get_y() + bar.get_height() / 2, f"{w:.1f} ms", va="center", fontweight="bold")
 
     plt.tight_layout()
-    out_png = "figure_author_scale_5000_benchmark.png"
+    fig_dir = os.path.join(REPO_ROOT, "figures")
+    os.makedirs(fig_dir, exist_ok=True)
+    out_png = os.path.join(fig_dir, "figure_author_scale_5000_benchmark.png")
     plt.savefig(out_png, dpi=300)
     plt.close()
     print(f"Publication-ready chart saved to {out_png}")

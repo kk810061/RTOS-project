@@ -3,9 +3,15 @@ Unit tests and analytical verification for Equations (8)-(18) from:
 Toba, Baruah, and Azumi, "Enhancing Deadline Miss Early Detection for DAG Tasks
 with Variable Probabilistic Thresholds", ACM TECS 2026 (DOI: 10.1145/3808694).
 """
+import os
+import sys
 import unittest
 import numpy as np
 import networkx as nx
+
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, REPO_ROOT)
+sys.path.insert(0, os.path.join(REPO_ROOT, "benchmarks"))
 
 from run_research_benchmarks import eq15_18, compute_plaxity
 

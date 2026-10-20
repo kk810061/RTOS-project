@@ -821,8 +821,8 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
         </div>
 
         <!-- GANTT CANVAS CONTAINER -->
-        <div class="relative w-full overflow-x-auto custom-scroll bg-slate-950/70 rounded-lg p-3 border border-slate-800/80 min-h-[260px]">
-          <canvas id="gantt-canvas" height="260" class="w-full"></canvas>
+        <div class="relative w-full overflow-x-auto custom-scroll bg-slate-950/70 rounded-lg p-3 border border-slate-800/80 min-h-[280px]">
+          <canvas id="gantt-canvas" height="280" class="w-full"></canvas>
         </div>
 
         <!-- GANTT LEGEND -->
@@ -1223,14 +1223,14 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * dpr;
-      canvas.height = 260 * dpr;
+      canvas.height = 280 * dpr;
       ctx.scale(dpr, dpr);
 
       const w = rect.width;
-      const h = 260;
+      const h = 280;
       ctx.clearRect(0, 0, w, h);
 
-      const margin = { left: 65, right: 30, top: 25, bottom: 30 };
+      const margin = { left: 65, right: 30, top: 40, bottom: 25 };
       const chartW = w - margin.left - margin.right;
       const chartH = h - margin.top - margin.bottom;
 
@@ -1306,11 +1306,12 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
       ctx.textAlign = 'center';
       ctx.fillText(`DEADLINE D (${deadline}ms)`, deadX, margin.top - 12);
 
-      // Draw Alarm Beacon
+      // Draw Alarm Beacon & Repositioned Header Badge (Above Core 0)
       if (job.alarmed && job.t_alarm !== null) {
         const alarmX = timeToX(job.t_alarm);
         const alarmY = margin.top + (job.alarm_core >= 0 ? job.alarm_core * coreH + coreH / 2 : 10);
 
+        // Vertical Alarm Line passing through all 8 cores
         ctx.strokeStyle = '#f59e0b';
         ctx.lineWidth = 2.5;
         ctx.beginPath();
@@ -1318,36 +1319,53 @@ DASHBOARD_HTML = r"""<!DOCTYPE html>
         ctx.lineTo(alarmX, margin.top + chartH);
         ctx.stroke();
 
+        // Pulsing Beacon on the core where alarm fired
         ctx.fillStyle = 'rgba(239, 68, 68, 0.35)';
         ctx.beginPath();
-        ctx.arc(alarmX, alarmY, 11, 0, Math.PI * 2);
+        ctx.arc(alarmX, alarmY, 10, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.fillStyle = '#ef4444';
         ctx.beginPath();
-        ctx.arc(alarmX, alarmY, 6, 0, Math.PI * 2);
+        ctx.arc(alarmX, alarmY, 5.5, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        const tag = `⚠️ ALARM @ ${job.t_alarm}ms (Node ${job.alarm_node} | ${job.alarm_cause || 'Alert'})`;
+        // Top Header Alarm Panel (Strictly ABOVE Core 0 in header space)
+        const tag = `⚠️ ALARM @ ${job.t_alarm}ms (Node ${job.alarm_node} | ${job.alarm_cause || 'Contention Detected'})`;
         ctx.font = 'bold 10px sans-serif';
-        const tagW = ctx.measureText(tag).width + 16;
-        const tagH = 22;
+        const tagW = ctx.measureText(tag).width + 18;
+        const tagH = 24;
 
-        let tagX = Math.min(w - tagW - 10, Math.max(margin.left + 5, alarmX - tagW / 2));
-        let tagY = alarmY - 30;
-        if (tagY < margin.top) tagY = alarmY + 12;
+        // Position badge above Core 0 (y = 8) with zero occlusion of any core
+        let tagX = alarmX - tagW / 2;
+        tagX = Math.max(margin.left, Math.min(w - tagW - 10, tagX));
+        if (deadX > tagX && tagX + tagW > deadX - 35) {
+          tagX = Math.max(margin.left, deadX - tagW - 40);
+        }
+        const tagY = 8;
 
-        ctx.fillStyle = '#7f1d1d';
-        ctx.strokeStyle = '#fef08a';
+        // Badge Container with amber/orange styling
+        ctx.fillStyle = '#781d1d';
+        ctx.strokeStyle = '#f59e0b';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.roundRect(tagX, tagY, tagW, tagH, 5);
         ctx.fill();
         ctx.stroke();
 
+        // Small downward pointer connecting badge to the vertical alarm line
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.moveTo(alarmX - 4, tagY + tagH);
+        ctx.lineTo(alarmX + 4, tagY + tagH);
+        ctx.lineTo(alarmX, margin.top);
+        ctx.closePath();
+        ctx.fill();
+
+        // Bright Yellow/Gold Text inside Top Badge
         ctx.fillStyle = '#fef08a';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';

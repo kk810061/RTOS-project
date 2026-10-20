@@ -1,0 +1,7 @@
+Configuration,Context (Id 3),Queue (Id 2),Mitigation (Id 1),Recall %,Precision %,Lead Time (ms),DSR %,Salvaged Count
+1. Toba Baseline,No,No,No,100.0%,"59.2% [51.6, 66.3]","121.9 [111.2, 132.6]","0.0% [0.0, 3.7]",0 / 100
+2. Idea 2 Alone (Queue-Aware Only),No,Yes,No,100.0%,"59.2% [51.6, 66.3]","213.8 [193.3, 234.4]","0.0% [0.0, 3.7]",0 / 100
+3. Idea 3 Alone (Context-Coupled Only),Yes,No,No,100.0%,"58.1% [50.7, 65.3]","171.5 [156.9, 186.1]","0.0% [0.0, 3.7]",0 / 100
+4. Ideas 3 + 2 (Context + Queue Passive),Yes,Yes,No,100.0%,"58.1% [50.7, 65.3]","260.0 [240.8, 279.3]","0.0% [0.0, 3.7]",0 / 100
+5. Ideas 3 + 1 (Context + Mitigation),Yes,No,Yes,100.0%,"58.1% [50.7, 65.3]","171.5 [156.9, 186.1]","61.0% [51.2, 70.0]",61 / 100
+6. Triad Framework (Ideas 3 + 2 + 1),Yes,Yes,Yes,100.0%,"58.1% [50.7, 65.3]","260.0 [240.8, 279.3]","90.0% [82.6, 94.5]",90 / 100
